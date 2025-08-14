@@ -369,7 +369,7 @@ const notificationStatus = document.getElementById('notification-status');
 // Check notification permission state
 function updateNotificationUI() {
     if (Notification.permission === 'granted') {
-        notifyBtn.textContent = 'ðŸ”• Disable Notifications';
+        notifyBtn.textContent = '❌ Disable Notifications';
         notifyBtn.style.background = '#7d7daa';
         notificationStatus.textContent = 'Notifications are enabled';
         scheduleAllNotifications();
