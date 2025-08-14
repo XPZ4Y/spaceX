@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calm Timetable</title>
+<title>AI BADDIES Timetable</title>
 <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -200,7 +200,8 @@
     <button id="notify-btn" style="background: #9370db; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.15); transition: all 0.2s ease;">Enable Notifications :)
     </button>
     <p id="notification-status" style="font-size: 0.8rem; color: #7d7daa; margin-top: 5px;"></p>
-<l1 style='font-size: x-small'>made with Shawn by Chris. All rights reserved</l1>
+<l1 style='font-size: x-small'>Made with Shawn by Chris. All rights reserved</l1>
+<l1 style='font-size: x-small'>"Donut worry, You got this, Probably" --By Bang Ding Ow</l1>
 </div>
 
 
@@ -422,7 +423,7 @@ function scheduleAllNotifications() {
         
         // Create a Date object for the notification time (5 minutes before)
         const notificationTime = new Date(currentDate);
-        notificationTime.setHours(hours, minutes - 5, 0, 0);
+        notificationTime.setHours(hours, minutes - 1, 0, 0);
         
         // Only schedule if the time hasn't passed yet
         if (notificationTime > new Date()) {
