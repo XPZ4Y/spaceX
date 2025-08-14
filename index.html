@@ -1,281 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hyperBrain</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: black;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: 'Courier New', monospace;
-        }
-        
-        #starfield {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-        
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-        }
-        
-        #text-container {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            color: white;
-            font-size: 2.5rem;
-            text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073;
-        }
-        
-        #cursor {
-            display: inline-block;
-            width: 10px;
-            height: 2rem;
-            background-color: white;
-            animation: blink 1s step-end infinite;
-            vertical-align: middle;
-            margin-left: 5px;
-        }
-        
-        @keyframes blink {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
-        }
-        #text-container {
-            position: absolute;
-            left: 20%;
-            z-index: 2;
-            text-align: left;
-            color: white;
-            font-size: 2.5rem;
-            max-width: 60%;
-            padding: 20px 40px;
-            background-color: rgba(0, 0, 0, 0.6);
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            transition: opacity 1s ease;
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autumn Timetable</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom, #fbe4c4, #f8b195);
+        margin: 0;
+        padding: 20px;
+        color: #5a3e2b;
+    }
+    h1 {
+        text-align: center;
+        color: #7b3f00;
+    }
+    .periods {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 450px;
+        margin: auto;
+    }
+    .period-btn {
+        background-color: #d2691e;
+        border: none;
+        padding: 15px;
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+        text-align: left;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .period-btn:hover {
+        background-color: #b05214;
+    }
+    .null-btn {
+        background-color: #deb887;
+        color: #5a3e2b;
+    }
+</style>
 </head>
 <body>
-    <div id="starfield"></div>
-    <div id="text-container">
-        <span id="text-display"></span><span id="cursor"></span>
-    </div>
 
-    <script>
-        //text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073;
-        // Configuration - Adjust these values as needed
-        const config = {
-            starCount: 2,               // Number of stars (1 or 2)
-            starSpeed: 0.2,            // Speed of stars (0.1 to 1)
-            typingSpeed: 50,           // Base typing speed in ms (lower is faster)
-            deletingSpeed: 30,         // Base deleting speed in ms (lower is faster)
-            cameraSpeed: 1,            // Base camera movement speed (1 is normal)
-            cursorVisibleDuringDelete: false // Show cursor while deleting
-        };
-        
-        // Slide data - format: "text()typingSpeedMultiplier()cameraSpeedMultiplier"
-        const dm = [
-            "Machine Learning...()1()1",
-            "Ahh yes, it is a function that can convert input to an output()0.8()0.7",
-            "Let's say, the output size is 100 bits (each bit has either 0 or 1)()1.2()1.5",
-            "How many possible outputs exist??()0.7()2",
-            "more than trillion possible outputs!()1()1",
-            "For a given input, only one or few of the possibilities are needed...()1.2()0.8",
-            "How do we know which of the trillions can be considered feasable for a given input?()2()0.8",
-            "By understanding the rules governing the infeasable possibilities()1.2()0.8",
-            "That's why we first blindly try random possibilities, expecting failure()0.8()0.8",
-            "And over time, we pinpoint the kind of output that WORKS()0.8()0.8",
-            "Can machines be coded to do this?()0.8()0.8",
-            "As per current frontier research.. a resolute YES!()0.8()0.8",
-            "Collaborate on our open source project()0.8()0.8"
-        ];
-        const slides = [
-            "Ah yes, SpaceX",
-            "Founded: 2002 by Elon Musk",
-            "Goal: Reduce space travel costs, enable Mars colonization",
-            "Made the first privately-funded spacecraft to reach orbit (Falcon 1, 2008)",
-            "First reusable orbital rocket (Falcon 9, 2015)",
-            "First private crewed mission to ISS (Crew Dragon, 2020)",
-            "Largest & most powerful rocket ever (Starship, in development)",
-            "DID YOU KNOW??",
-            "SpaceX’s Falcon 9 can land itself back on Earth for reuse—cutting costs by ~70%!",
-            "How SpaceX Benefits Humanity?",
-            "Cheaper Space Access",
-            "Global Internet (Starlink)",
-            "Mars & Beyond",
-            "Challenges & Debates :(",
-            "Space Debris: Starlink satellites could clutter orbit. (But SpaceX is testing fixes.)",
-            "Mars Feasibility: Can humans really live there? (Trials on Earth are ongoing.)",
-            "Monopoly Concerns: Does SpaceX dominate space too much?",
-            "Thank you"
+<h1>Today's Timetable</h1>
+<div class="periods" id="periods-container"></div>
 
-            ]
-        
-        // DOM elements
-        const starfield = document.getElementById('starfield');
-        const textDisplay = document.getElementById('text-display');
-        const cursor = document.getElementById('cursor');
-        
-        // State variables
-        let currentSlideIndex = 0;
-        let isTyping = false;
-        let isDeleting = false;
-        let stars = [];
-        
-        // Initialize the application
-        function init() {
-            createStars();
-            animateStars();
-            document.addEventListener('click', nextSlide);
-            nextSlide();
+<script>
+    // Full timetable data from image
+    const timetable = {
+        "MON": [
+            { time: "9:00 - 9:50", subject: "PHY" },
+            { time: "9:50 - 10:40", subject: "M1" },
+            { time: "10:55 - 11:45", subject: "AI" },
+            { time: "11:45 - 12:35", subject: "CP" },
+            { time: "1:30 - 2:20", subject: "EC" },
+            { time: "2:25 - 3:15", subject: "MOOCs" },
+            { time: "3:20 - 4:10", subject: "CLUB" }
+        ],
+        "TUE": [
+            { time: "9:00 - 10:40", subject: "PHY LAB B3 (LCRI) / SCILAB B4 (LCRI)" },
+            { time: "10:55 - 11:45", subject: "TRAINING B4" },
+            { time: "11:45 - 12:35", subject: "AI" },
+            { time: "1:30 - 2:20", subject: "PHY" },
+            { time: "2:25 - 3:15", subject: "M1" },
+            { time: "3:20 - 4:10", subject: "CLUB" }
+        ],
+        "WED": [
+            { time: "9:00 - 9:50", subject: "M1" },
+            { time: "9:50 - 10:40", subject: "UHV" },
+            { time: "10:55 - 11:45", subject: "BIO" },
+            { time: "11:45 - 12:35", subject: "EC" },
+            { time: "1:30 - 2:20", subject: "EC LAB B3 (LCRI) / CP LAB B4 (LCRI)" },
+            { time: "2:25 - 3:15", subject: null },
+            { time: "3:20 - 4:10", subject: "CLUB" }
+        ],
+        "THU": [
+            { time: "9:00 - 9:50", subject: "CP" },
+            { time: "9:50 - 10:40", subject: "UHV" },
+            { time: "10:55 - 11:45", subject: "EC" },
+            { time: "11:45 - 12:35", subject: "PHY" },
+            { time: "1:30 - 2:20", subject: "M1" },
+            { time: "2:25 - 3:15", subject: "INNOVATION" },
+            { time: "3:20 - 4:10", subject: null }
+        ],
+        "FRI": [
+            { time: "9:00 - 10:40", subject: "EC LAB B4 (XAVIER) / CP LAB B3 (LCRI)" },
+            { time: "10:55 - 11:45", subject: "LIBRARY" },
+            { time: "11:45 - 12:35", subject: "CP" },
+            { time: "1:30 - 2:20", subject: "MENTORING" },
+            { time: "2:25 - 3:15", subject: "GAVEL CLUB" },
+            { time: "3:20 - 4:10", subject: null }
+        ],
+        "SAT": [
+            { time: "9:00 - 9:50", subject: "CIP" },
+            { time: "9:50 - 10:40", subject: "PHY LAB B4 (LCRI) / SCILAB B3 (LCRI) / TRAINING B3" },
+            { time: "10:55 - 11:45", subject: null },
+            { time: "11:45 - 12:35", subject: null },
+            { time: "1:30 - 2:20", subject: null },
+            { time: "2:25 - 3:15", subject: null },
+            { time: "3:20 - 4:10", subject: null }
+        ]
+    };
+
+    // Fixed daily slots from timetable
+    const timeSlots = [
+        "9:00 - 9:50",
+        "9:50 - 10:40",
+        "10:55 - 11:45",
+        "11:45 - 12:35",
+        "1:30 - 2:20",
+        "2:25 - 3:15",
+        "3:20 - 4:10"
+    ];
+
+    // Get today's day (change for testing)
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+    const todayPeriods = timetable[today] || [];
+
+    const container = document.getElementById('periods-container');
+
+    timeSlots.forEach(slot => {
+        const period = todayPeriods.find(p => p.time === slot);
+        if (period) {
+            const btn = document.createElement('button');
+            btn.className = period.subject ? "period-btn" : "period-btn null-btn";
+            btn.textContent = `${slot} — ${period.subject || "NULL"}`;
+            container.appendChild(btn);
+        } else {
+            const btn = document.createElement('button');
+            btn.className = "period-btn null-btn";
+            btn.textContent = `${slot} — NULL`;
+            container.appendChild(btn);
         }
-        
-        // Create star elements
-        function createStars() {
-            starfield.innerHTML = '';
-            stars = [];
-            
-            for (let i = 0; i < config.starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                
-                // Random initial position and size
-                const size = Math.random() * 3 + 1;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                
-                // Position off-screen to the left or right
-                if (Math.random() > 0.5) {
-                    star.style.left = `${Math.random() * 100}%`;
-                    star.style.top = '-10px';
-                } else {
-                    star.style.left = '-10px';
-                    star.style.top = `${Math.random() * 100}%`;
-                }
-                
-                starfield.appendChild(star);
-                stars.push({
-                    element: star,
-                    x: parseFloat(star.style.left),
-                    y: parseFloat(star.style.top),
-                    speed: (Math.random() * 0.5 + 0.5) * config.starSpeed,
-                    direction: Math.random() * Math.PI * 2
-                });
-            }
-        }
-        
-        // Animate stars moving
-        function animateStars() {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            
-            stars.forEach(star => {
-                // Move star in its direction
-                star.x += Math.cos(star.direction) * star.speed * 10;
-                star.y += Math.sin(star.direction) * star.speed * 10;
-                
-                // Reset star if it goes off-screen
-                if (star.x < -20 || star.x > width + 20 || star.y < -20 || star.y > height + 20) {
-                    star.x = Math.random() > 0.5 ? Math.random() * width : (Math.random() > 0.5 ? -10 : width + 10);
-                    star.y = Math.random() > 0.5 ? Math.random() * height : (Math.random() > 0.5 ? -10 : height + 10);
-                    star.direction = Math.atan2(height/2 - star.y, width/2 - star.x) + (Math.random() - 0.5) * 0.5;
-                }
-                
-                star.element.style.left = `${star.x}px`;
-                star.element.style.top = `${star.y}px`;
-            });
-            
-            requestAnimationFrame(animateStars);
-        }
-        
-        // Process the next slide
-        function nextSlide() {
-            if (isTyping || isDeleting) return;
-            
-            // Get current slide data
-            const slideData = slides[currentSlideIndex].split('()');
-            const text = slideData[0];
-            const typingSpeedMultiplier = slideData[1] ? parseFloat(slideData[1]) : 1;
-            const cameraSpeedMultiplier = slideData[2] ? parseFloat(slideData[2]) : 1;
-            const videoLink = slideData[3] ? parseFloat(slideData[3]) : 'null';
-            
-            // Update config with slide-specific multipliers
-            const effectiveTypingSpeed = config.typingSpeed / typingSpeedMultiplier;
-            const effectiveDeletingSpeed = config.deletingSpeed / typingSpeedMultiplier;
-            const effectiveCameraSpeed = config.cameraSpeed * cameraSpeedMultiplier;
-            
-            // Start deleting current text if any
-            if (textDisplay.textContent.length > 0) {
-                deleteText(effectiveDeletingSpeed, () => {
-                    typeText(text, effectiveTypingSpeed);
-                });
-            } else {
-                typeText(text, effectiveTypingSpeed);
-            }
-            
-            // Update star speed based on camera speed
-            stars.forEach(star => {
-                star.speed = (Math.random() * 0.5 + 0.5) * config.starSpeed * effectiveCameraSpeed;
-            });
-            
-            // Move to next slide (or loop)
-            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-        }
-        
-        // Type text character by character
-        function typeText(text, speed) {
-            isTyping = true;
-            cursor.style.opacity = '1';
-            
-            let i = 0;
-            const typingInterval = setInterval(() => {
-                if (i < text.length) {
-                    textDisplay.textContent += text.charAt(i);
-                    i++;
-                } else {
-                    clearInterval(typingInterval);
-                    isTyping = false;
-                }
-            }, speed);
-        }
-        
-        // Delete text character by character
-        function deleteText(speed, callback) {
-            isDeleting = true;
-            if (!config.cursorVisibleDuringDelete) {
-                cursor.style.opacity = '0';
-            }
-            
-            const deletingInterval = setInterval(() => {
-                if (textDisplay.textContent.length > 0) {
-                    textDisplay.textContent = textDisplay.textContent.slice(0, -1);
-                } else {
-                    clearInterval(deletingInterval);
-                    isDeleting = false;
-                    cursor.style.opacity = '1';
-                    callback();
-                }
-            }, speed);
-        }
-        
-        // Start the application
-        window.onload = init;
-    </script>
+    });
+</script>
+
 </body>
 </html>
