@@ -187,14 +187,20 @@
     <h1>Timetable</h1>
     
     <div class="date-navigation">
-        <button class="nav-btn" id="prev-btn">←</button>
+        <button class="nav-btn" id="prev-btn">â†</button>
         <div id="date-display"></div>
-        <button class="nav-btn" id="next-btn">→</button>
+        <button class="nav-btn" id="next-btn">â†’</button>
     </div>
     
     <div class="day-indicator" id="day-indicator"></div>
     
     <div class="periods" id="periods-container"></div>
+</div>
+<div id="notification-control" style="margin-bottom: 15px; text-align: center;">
+    <button id="notify-btn" style="background: #9370db; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.15); transition: all 0.2s ease;">
+        ðŸ”” Enable Notifications
+    </button>
+    <p id="notification-status" style="font-size: 0.8rem; color: #7d7daa; margin-top: 5px;"></p>
 </div>
 
 <script>
@@ -289,6 +295,10 @@
             "2:25 - 3:15",
             "3:20 - 4:10"
         ];
+        cancelAllNotifications();
+    if (Notification.permission === 'granted') {
+        scheduleAllNotifications();
+    }
 
         timeSlots.forEach(slot => {
             const period = todayPeriods.find(p => p.time === slot);
@@ -350,6 +360,111 @@
             nextDay();
         }
     });
+    
+// Notification functionality
+const notifyBtn = document.getElementById('notify-btn');
+const notificationStatus = document.getElementById('notification-status');
+
+// Check notification permission state
+function updateNotificationUI() {
+    if (Notification.permission === 'granted') {
+        notifyBtn.textContent = 'ðŸ”• Disable Notifications';
+        notifyBtn.style.background = '#7d7daa';
+        notificationStatus.textContent = 'Notifications are enabled';
+        scheduleAllNotifications();
+    } else {
+        notifyBtn.textContent = 'ðŸ”” Enable Notifications';
+        notifyBtn.style.background = '#9370db';
+        notificationStatus.textContent = Notification.permission === 'denied' 
+            ? 'Notifications blocked in browser settings' 
+            : 'Get reminders 5 minutes before class';
+    }
+}
+
+// Request notification permission
+notifyBtn.addEventListener('click', async () => {
+    if (Notification.permission === 'granted') {
+        // If already granted, clicking will disable
+        Notification.permission = 'default'; // Reset permission state
+        cancelAllNotifications();
+        updateNotificationUI();
+        return;
+    }
+    
+    const permission = await Notification.requestPermission();
+    updateNotificationUI();
+    
+    if (permission === 'granted') {
+        // Register service worker for background notifications
+        try {
+            const registration = await navigator.serviceWorker.register('sw.js');
+            console.log('ServiceWorker registration successful');
+        } catch (err) {
+            console.log('ServiceWorker registration failed: ', err);
+        }
+    }
+});
+
+// Schedule notifications for all periods of the current day
+function scheduleAllNotifications() {
+    if (Notification.permission !== 'granted') return;
+    
+    const dayName = daysOrder[currentDate.getDay()];
+    const todayPeriods = timetable[dayName] || [];
+    
+    todayPeriods.forEach(period => {
+        if (!period.subject) return; // Skip free periods
+        
+        // Parse the period time (format: "9:00 - 9:50")
+        const [startTimeStr] = period.time.split(' - ');
+        const [hours, minutes] = startTimeStr.split(':').map(Number);
+        
+        // Create a Date object for the notification time (5 minutes before)
+        const notificationTime = new Date(currentDate);
+        notificationTime.setHours(hours, minutes - 5, 0, 0);
+        
+        // Only schedule if the time hasn't passed yet
+        if (notificationTime > new Date()) {
+            scheduleNotification(period.subject, period.time, notificationTime);
+        }
+    });
+}
+
+// Cancel all scheduled notifications
+function cancelAllNotifications() {
+    if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.getNotifications().then(notifications => {
+                notifications.forEach(notification => notification.close());
+            });
+        });
+    }
+}
+
+// Schedule a single notification
+function scheduleNotification(subject, time, notificationTime) {
+    const now = new Date();
+    const timeUntilNotification = notificationTime - now;
+    
+    if (timeUntilNotification <= 0) return;
+    
+    setTimeout(() => {
+        const notificationTitle = `Class starting soon: ${subject}`;
+        const notificationBody = `Starts at ${time.split(' - ')[0]}`;
+        
+        if (Notification.permission === 'granted') {
+            new Notification(notificationTitle, {
+                body: notificationBody,
+                icon: 'https://cdn-icons-png.flaticon.com/512/4472/4472584.png', // Optional icon
+                vibrate: [200, 100, 200] // Vibration pattern for mobile
+            });
+        }
+    }, timeUntilNotification);
+}
+
+// Update UI on load
+updateNotificationUI();
+
 
     renderDay(currentDate);
 </script>
